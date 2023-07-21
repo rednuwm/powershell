@@ -1,0 +1,16 @@
+$ports = "80"
+$destinations = "142.251.163.100", "31.13.66.35"
+
+$Results = @()
+$Results = foreach ($destination in $destinations) {
+  $object = New-Object PSCustomObject 
+  $object | Add-Member -MemberType NoteProperty -Name "ServerName" -Value $env:COMPUTERNAME
+  $object | Add-Member -MemberType NoteProperty -Name "Destination" -Value $destination
+    foreach ($port in $ports) {
+      $portcheck = (Test-NetConnection -Port $port -ComputerName $destination).TcpTestSucceeded
+      if($portcheck -notmatch "True|False"){$PortCheck = "ERROR"}
+      $Object | Add-Member NoteProperty "$("Port " + "$port")" -Value "$($PortCheck)"
+      }}
+    $Results += $Object
+
+$Results | Format-Table -AutoSize
